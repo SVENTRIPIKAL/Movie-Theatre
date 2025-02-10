@@ -3,6 +3,7 @@ package cinema.model
 const val ZERO = 0
 const val ONE = 1
 const val TWO = 2
+const val THREE = 3
 const val TWO_DUB = 2.0
 const val EIGHT = 8
 const val NINE = 9
@@ -17,7 +18,10 @@ const val THEATRE_ROWS = "Enter the number of rows:"
 const val SELECTION_ROW = "Enter a row number:"
 const val THEATRE_SEATS = "Enter the number of seats in each row:"
 const val SELECTION_SEAT = "Enter a seat number in that row:"
-const val INVALID_RANGE = "Number must be in range 1 to *"
+const val INVALID_RANGE = "Number must be in range $ONE to *"
+const val MENU_ONE = "$ONE. Show the seats"
+const val MENU_TWO = "$TWO. Buy a ticket"
+const val MENU_THREE = "$THREE. Exit"
 
 /**
  *  Data class representing a movie theatre
@@ -31,47 +35,22 @@ data class MovieTheatre(
     private val userSelection: MutableList<Int> = mutableListOf(ZERO, ZERO)
 ) {
     /**
-     *  sets the size of the movie theatre
-     *  by prompting the user for both
-     *  rows & seats values. Used to
-     *  update class' private properties
-     *  @see MovieTheatre
+     *  prompts the user for a number within
+     *  the range of 1 to 3
+     *  @return the user input
      *  @throws InvalidInputException
      *  @throws NumberFormatException
      */
-    fun setTheatreSize() {
-        while (true) {
-            try {
-                repeat(TWO) {
-                    when (it) {
-                        ZERO -> {
-                            println(THEATRE_ROWS)
-                            val input = readln().toInt()
-                            if (input in ONE..NINE) theatreRows = input
-                            else throw InvalidInputException(
-                                INVALID_RANGE.replace(ASTERISK, "$NINE")
-                            )
-                        }
-                        else -> {
-                            println(THEATRE_SEATS)
-                            val input = readln().toInt()
-                            if (input in ONE..NINE) theatreSeats = input
-                            else throw InvalidInputException(
-                                INVALID_RANGE.replace(ASTERISK, "$NINE")
-                            )
-                        }
-                    }
-                }.also { println() }
-                break
-            } catch (e: Exception) {
-                println(
-                    when (e) {
-                        is InvalidInputException -> "\n${e.javaClass.name}: \"${e.error}\"\n"
-                        else -> "\n$e\n"
-                    }
-                )
-            }
-        }
+    fun promptMenuChoice(): Int {
+        println("""
+            $MENU_ONE
+            $MENU_TWO
+            $MENU_THREE
+        """.trimIndent())
+        val input = readln().toInt()
+        return if (input in ONE..THREE) input else throw InvalidInputException(
+            INVALID_RANGE.replace(ASTERISK, "$THREE")
+        )
     }
 
     /**
@@ -196,5 +175,54 @@ data class MovieTheatre(
                 if (userSelection[ZERO] <= frontHalf) TEN else EIGHT
             }
         }
+    }
+
+    /**
+     *  sets the size of the movie theatre
+     *  by prompting the user for both
+     *  rows & seats values. Used to
+     *  update class' private properties.
+     *  Loops until valid inputs are received
+     *  @see MovieTheatre
+     *  @throws InvalidInputException
+     *  @throws NumberFormatException
+     */
+    private fun setTheatreSize() {
+        while (true) {
+            try {
+                repeat(TWO) {
+                    when (it) {
+                        ZERO -> {
+                            println(THEATRE_ROWS)
+                            val input = readln().toInt()
+                            if (input in ONE..NINE) theatreRows = input
+                            else throw InvalidInputException(
+                                INVALID_RANGE.replace(ASTERISK, "$NINE")
+                            )
+                        }
+                        else -> {
+                            println(THEATRE_SEATS)
+                            val input = readln().toInt()
+                            if (input in ONE..NINE) theatreSeats = input
+                            else throw InvalidInputException(
+                                INVALID_RANGE.replace(ASTERISK, "$NINE")
+                            )
+                        }
+                    }
+                }.also { println() }
+                break
+            } catch (e: Exception) {
+                println(
+                    when (e) {
+                        is InvalidInputException -> "\n${e.javaClass.name}: \"${e.error}\"\n"
+                        else -> "\n$e\n"
+                    }
+                )
+            }
+        }
+    }
+
+    init {
+        setTheatreSize()
     }
 }
