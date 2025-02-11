@@ -28,16 +28,18 @@ const val MENU_THREE = "$THREE. Exit"
  *  @param theatreRows the number of rows in the theatre
  *  @param theatreSeats the number of seats in each row
  *  @param userSelection the user's chosen row/seat value
+ *  @param availableSeats map of available seats in the theatre
  */
 data class MovieTheatre(
     private var theatreRows: Int = ZERO,
     private var theatreSeats: Int = ZERO,
-    private val userSelection: MutableList<Int> = mutableListOf(ZERO, ZERO)
+    private val userSelection: MutableList<Int> = mutableListOf(ZERO, ZERO),
+    private val availableSeats: MutableMap<Int, MutableList<String>> = mutableMapOf(),
 ) {
     /**
      *  prompts the user for a number within
      *  the range of 1 to 3
-     *  @return MenuChoice Enum
+     *  @see MenuChoice
      *  @throws InvalidInputException
      *  @throws NumberFormatException
      */
@@ -47,7 +49,7 @@ data class MovieTheatre(
             $MENU_TWO
             $MENU_THREE
         """.trimIndent())
-        return when (readln().trim().toInt()) {
+        return when (getNumberFromUser()) {
             ONE -> MenuChoice.SHOW_SEATS
             TWO -> MenuChoice.BUY_TICKET
             THREE -> MenuChoice.EXIT
@@ -71,21 +73,16 @@ data class MovieTheatre(
      */
     fun printTheatre() {
         if (isTheatreSizeSet()) {
-            val cinema = mutableListOf<MutableList<String>>()
-            for (row in ONE..theatreRows) {
-                val tempList = mutableListOf<String>()
-                for (seat in ONE..theatreSeats) {
-                    tempList.add(S_STRING)
-                }
-                cinema.add(tempList)
-            }
+            // print title
+            println("\n$CINEMA_STRING").also { print(EMPTY_SPACE.repeat(TWO)) }
 
-            if (isUserSelectionSet()) cinema[userSelection[ZERO].dec()][userSelection[ONE].dec()] = B_STRING
-
-            println(CINEMA_STRING).also { print(EMPTY_SPACE.repeat(TWO)) }
+            // print seat numbers
             println((ONE..theatreSeats).joinToString(EMPTY_SPACE))
-            repeat(theatreRows) { index ->
-                println("${index.inc()} ${cinema[index].joinToString(EMPTY_SPACE)}")
+
+            // print row numbers & each seat's availability status
+            availableSeats.entries.forEach { (key, value) ->
+                println("$key ${value.joinToString(EMPTY_SPACE)}")
+
             }.also { println() }
         }
     }
@@ -99,15 +96,18 @@ data class MovieTheatre(
      *  @throws InvalidInputException
      *  @throws NumberFormatException
      */
-    fun setSeatSelection() {
+    fun purchaseTicket() {
         if (isTheatreSizeSet()) {
             while (true) {
                 try {
                     repeat(TWO) {
                         when (it) {
                             ZERO -> {
+                                // TODO - receive user input
+                                // TODO - check if input in bought seats
+                                // TODO - update available seats
                                 println(SELECTION_ROW)
-                                val input = readln().toInt()
+                                val input = getNumberFromUser()
                                 if (input in ONE..theatreRows) userSelection[ZERO] = input
                                 else throw InvalidInputException(
                                     INVALID_RANGE.replace(ASTERISK, "$theatreRows")
@@ -115,7 +115,7 @@ data class MovieTheatre(
                             }
                             else -> {
                                 println(SELECTION_SEAT)
-                                val input = readln().toInt()
+                                val input = getNumberFromUser()
                                 if (input in ONE..theatreSeats) userSelection[ONE] = input
                                 else throw InvalidInputException(
                                     INVALID_RANGE.replace(ASTERISK, "$theatreSeats")
@@ -140,7 +140,13 @@ data class MovieTheatre(
      *  prints the ticket price for the user's
      *  selected row/seat value
      */
-    fun printTicketPrice() = println("Ticket price: $${getTicketPrice()}\n")
+    private fun printTicketPrice() = println("Ticket price: $${getTicketPrice()}\n")
+
+    /**
+     *  reads & converts user input to integer
+     *  @throws NumberFormatException
+     */
+    private fun getNumberFromUser() = readln().trim().toInt()
 
     /**
      *  returns true if theatre rows & seats set to numbers in range 1 to 9
@@ -182,11 +188,30 @@ data class MovieTheatre(
     }
 
     /**
+     *  sets default values for available seats
+     */
+    private fun setDefaultAvailableSeats() {
+        // create temp map for theatre layout
+        val tempMap = mutableMapOf<Int, MutableList<String>>()
+
+        // update temp map for available seats using rows/seats variables
+        for (row in ONE..theatreRows) {
+            val tempList = (ONE..theatreSeats).map { S_STRING }.toMutableList()
+
+            tempMap[row] = tempList
+        }
+        // update available seats variable
+        availableSeats.putAll(tempMap)
+    }
+
+    /**
      *  sets the size of the movie theatre
      *  by prompting the user for both
      *  rows & seats values. Used to
      *  update class' private properties.
-     *  Loops until valid inputs are received
+     *  Loops until valid inputs are received,
+     *  Then updates availableSeats variable
+     *  with default values
      *  @see MovieTheatre
      *  @throws InvalidInputException
      *  @throws NumberFormatException
@@ -196,17 +221,17 @@ data class MovieTheatre(
             try {
                 repeat(TWO) {
                     when (it) {
-                        ZERO -> {
+                        ZERO -> {   // prompt for rows
                             println(THEATRE_ROWS)
-                            val input = readln().toInt()
+                            val input = getNumberFromUser()
                             if (input in ONE..NINE) theatreRows = input
                             else throw InvalidInputException(
                                 INVALID_RANGE.replace(ASTERISK, "$NINE")
                             )
                         }
-                        else -> {
+                        else -> {   // prompt for seats in each row
                             println(THEATRE_SEATS)
-                            val input = readln().toInt()
+                            val input = getNumberFromUser()
                             if (input in ONE..NINE) theatreSeats = input
                             else throw InvalidInputException(
                                 INVALID_RANGE.replace(ASTERISK, "$NINE")
@@ -214,7 +239,12 @@ data class MovieTheatre(
                         }
                     }
                 }.also { println() }
+
+                // set default values for available seats
+                setDefaultAvailableSeats()
+
                 break
+
             } catch (e: Exception) {
                 println(
                     when (e) {

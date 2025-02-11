@@ -1,10 +1,10 @@
 package cinema.model
 
 /**
- *  enum class for MenuChoice user selection
- *  @property SHOW_SEATS
- *  @property BUY_TICKET
- *  @property EXIT
+ *  enum class replacing user input for MenuChoice
+ *  @property SHOW_SEATS print theatre to screen
+ *  @property BUY_TICKET update available seats
+ *  @property EXIT end program
  */
 enum class MenuChoice {
     SHOW_SEATS,
