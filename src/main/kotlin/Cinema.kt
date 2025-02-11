@@ -8,9 +8,8 @@ fun main() {
     // initialize movie theatre
     val theatre = MovieTheatre()
 
-    // prompt user for choices
     while (true) {
-        try {
+        try {       // prompt user for choices
             when (theatre.promptMenuChoice()) {
                 MenuChoice.SHOW_SEATS -> theatre.printTheatre()         // show seats
                 MenuChoice.BUY_TICKET -> theatre.purchaseTicket()       // buy ticket
