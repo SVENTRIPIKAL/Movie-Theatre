@@ -37,20 +37,24 @@ data class MovieTheatre(
     /**
      *  prompts the user for a number within
      *  the range of 1 to 3
-     *  @return the user input
+     *  @return MenuChoice Enum
      *  @throws InvalidInputException
      *  @throws NumberFormatException
      */
-    fun promptMenuChoice(): Int {
+    fun promptMenuChoice(): MenuChoice {
         println("""
             $MENU_ONE
             $MENU_TWO
             $MENU_THREE
         """.trimIndent())
-        val input = readln().toInt()
-        return if (input in ONE..THREE) input else throw InvalidInputException(
-            INVALID_RANGE.replace(ASTERISK, "$THREE")
-        )
+        return when (readln().trim().toInt()) {
+            ONE -> MenuChoice.SHOW_SEATS
+            TWO -> MenuChoice.BUY_TICKET
+            THREE -> MenuChoice.EXIT
+            else -> throw InvalidInputException(
+                INVALID_RANGE.replace(ASTERISK, "$THREE")
+            )
+        }
     }
 
     /**
