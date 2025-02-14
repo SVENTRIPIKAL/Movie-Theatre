@@ -15,7 +15,7 @@ data class MovieTheatre(
 ) {
     /**
      *  prompts the user for a number within
-     *  the range of 0 to 2
+     *  the range of 0 to 3
      *  @see MenuChoice
      *  @throws InvalidInputException
      *  @throws NumberFormatException
@@ -24,14 +24,16 @@ data class MovieTheatre(
         println("""
             ${MenuChoice.SHOW_SEATS.option}
             ${MenuChoice.BUY_TICKET.option}
+            ${MenuChoice.STATISTICS.option}
             ${MenuChoice.EXIT.option}
         """.trimIndent())
         return when (getNumberFromUser()) {
             ONE -> MenuChoice.SHOW_SEATS
             TWO -> MenuChoice.BUY_TICKET
+            THREE -> MenuChoice.STATISTICS
             ZERO -> MenuChoice.EXIT
             else -> throw InvalidInputException(
-                INVALID_RANGE.replace(ASTERISK, "$TWO")
+                INVALID_RANGE.replace(ASTERISK, "$THREE")
                     .replace("$ONE", "$ZERO")
             )
         }
@@ -123,6 +125,18 @@ data class MovieTheatre(
                 )
             }
         }
+    }
+
+    /**
+     *  prints information regarding the number of
+     *  tickets sold, its value as a percentage,
+     *  as well as current and possible income
+     */
+    fun printStatistics() {
+        // TODO - 1. number of purchased tickets
+        // TODO - 2. 1 as percentage (rounded 2 decimals)
+        // TODO - 3. current income (from sold tickets)
+        // TODO - 4. total possible income (if all tickets sold)
     }
 
     /**
