@@ -3,7 +3,6 @@ package cinema.model
 const val ZERO = 0
 const val ONE = 1
 const val TWO = 2
-const val THREE = 3
 const val TWO_DUB = 2.0
 const val EIGHT = 8
 const val NINE = 9
@@ -22,7 +21,7 @@ const val INVALID_RANGE = "Number must be in range $ONE to *"
 const val SEAT_UNAVAILABLE = "Chosen seat is unavailable for purchase"
 const val MENU_ONE = "$ONE. Show the seats"
 const val MENU_TWO = "$TWO. Buy a ticket"
-const val MENU_THREE = "$THREE. Exit"
+const val MENU_ZERO = "$ZERO. Exit"
 
 /**
  *  Data class representing a movie theatre
@@ -46,14 +45,15 @@ data class MovieTheatre(
         println("""
             $MENU_ONE
             $MENU_TWO
-            $MENU_THREE
+            $MENU_ZERO
         """.trimIndent())
         return when (getNumberFromUser()) {
             ONE -> MenuChoice.SHOW_SEATS
             TWO -> MenuChoice.BUY_TICKET
-            THREE -> MenuChoice.EXIT
+            ZERO -> MenuChoice.EXIT
             else -> throw InvalidInputException(
-                INVALID_RANGE.replace(ASTERISK, "$THREE")
+                INVALID_RANGE.replace(ASTERISK, "$TWO")
+                    .replace("$ONE", "$ZERO")
             )
         }
     }
