@@ -71,13 +71,14 @@ data class MovieTheatre(
      *  @throws NumberFormatException
      */
     fun purchaseTicket() {
+        println()
         while (true) {
             try {
                 var row = ZERO; var seat = ZERO
                 repeat(TWO) {
                     when (it) {
                         ZERO -> {   // prompt user for row number
-                            println("\n$SELECTION_ROW")
+                            println(SELECTION_ROW)
                             val input = getNumberFromUser()
 
                             if (input in ONE..theatreRows) row = input
