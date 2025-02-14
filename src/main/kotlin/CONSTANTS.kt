@@ -4,6 +4,7 @@ const val ZERO = 0
 const val ONE = 1
 const val TWO = 2
 const val TWO_DUB = 2.0
+const val THREE = 3
 const val EIGHT = 8
 const val NINE = 9
 const val TEN = 10
