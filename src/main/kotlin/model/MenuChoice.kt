@@ -4,6 +4,7 @@ import cinema.ONE
 import cinema.THREE
 import cinema.TWO
 import cinema.ZERO
+import cinema.model.MenuChoice.*
 
 private const val MENU_ONE = "$ONE. Show the seats"
 private const val MENU_TWO = "$TWO. Buy a ticket"
