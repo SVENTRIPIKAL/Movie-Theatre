@@ -1,6 +1,8 @@
 package cinema.model
 
 import cinema.*
+import jdk.jfr.Percentage
+import javax.swing.text.html.HTML.Tag.HEAD
 
 /**
  *  Data class representing a movie theatre
@@ -32,10 +34,10 @@ data class MovieTheatre(
             ${MenuChoice.EXIT.option}
         """.trimIndent())
         return when (getNumberFromUser()) {
-            ONE -> MenuChoice.SHOW_SEATS
-            TWO -> MenuChoice.BUY_TICKET
-            THREE -> MenuChoice.STATISTICS
-            ZERO -> MenuChoice.EXIT
+            ONE -> MenuChoice.SHOW_SEATS        // show seats
+            TWO -> MenuChoice.BUY_TICKET        // buy ticket
+            THREE -> MenuChoice.STATISTICS      // show data
+            ZERO -> MenuChoice.EXIT             // exit
             else -> throw InvalidInputException(
                 INVALID_RANGE.replace(ASTERISK, "$THREE")
                     .replace("$ONE", "$ZERO")
@@ -208,14 +210,14 @@ data class MovieTheatre(
      *  @see theatrePossibleIncome
      */
     fun printStatistics() {
-        println()
         println("""
+            
             Number of purchased tickets: ${getTicketsSold()}
             Percentage: ${DECIMAL_FORMAT.format(getTicketsSoldPercentage())}%
             Current income: $$theatreCurrentIncome
             Total income: $$theatrePossibleIncome
+            
         """.trimIndent())
-        println()
     }
 
     /**
