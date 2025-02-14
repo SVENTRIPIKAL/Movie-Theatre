@@ -4,6 +4,10 @@ import cinema.model.InvalidInputException
 import cinema.model.MenuChoice
 import cinema.model.MovieTheatre
 
+// TODO - update exception messages
+// That ticket has already been purchased!
+// Wrong input!
+
 fun main() {
     // initialize movie theatre
     val theatre = MovieTheatre()
@@ -13,6 +17,7 @@ fun main() {
             when (theatre.promptMenuChoice()) {
                 MenuChoice.SHOW_SEATS -> theatre.printTheatre()         // show seats
                 MenuChoice.BUY_TICKET -> theatre.purchaseTicket()       // buy ticket
+                MenuChoice.STATISTICS -> theatre.printStatistics()      // show data
                 MenuChoice.EXIT -> break                                // exit
             }
         } catch (e: Exception) {
