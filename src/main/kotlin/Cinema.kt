@@ -18,10 +18,22 @@ fun main() {
         } catch (e: Exception) {
             println(
                 when (e) {  // print exception messages to screen
-                    is InvalidInputException -> "\n${e.javaClass.name}: \"${e.error}\"\n"
-                    else -> "\n$e\n"
+                    is InvalidInputException -> printCustomException(e)
+                    else -> printException(e)
                 }
             )
         }
     }
 }
+
+/**
+ *  prints exception to screen
+ *  @param e exception
+ */
+fun printException(e: Exception) = "\n$e\n"
+
+/**
+ *  prints custom exception class name & message to screen
+ *  @param e exception
+ */
+fun printCustomException(e: Exception) = "\n${e.javaClass.name}: \"${e.localizedMessage}\"\n"
