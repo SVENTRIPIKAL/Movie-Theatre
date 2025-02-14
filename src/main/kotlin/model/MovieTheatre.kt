@@ -6,16 +6,20 @@ import cinema.*
  *  Data class representing a movie theatre
  *  @param theatreRows the number of rows in the theatre
  *  @param theatreSeats the number of seats in each row
+ *  @param theatreCurrentIncome current income from sold tickets
+ *  @param theatrePossibleIncome income if all tickets are sold
  *  @param availableSeats map of available seats in the theatre
  */
 data class MovieTheatre(
     private var theatreRows: Int = ZERO,
     private var theatreSeats: Int = ZERO,
+    private var theatreCurrentIncome: Int = ZERO,
+    private var theatrePossibleIncome: Int = ZERO,
     private val availableSeats: MutableMap<Int, MutableList<String>> = mutableMapOf(),
 ) {
     /**
      *  prompts the user for a number within
-     *  the range of 0 to 2
+     *  the range of 0 to 3
      *  @see MenuChoice
      *  @throws InvalidInputException
      *  @throws NumberFormatException
@@ -24,14 +28,16 @@ data class MovieTheatre(
         println("""
             ${MenuChoice.SHOW_SEATS.option}
             ${MenuChoice.BUY_TICKET.option}
+            ${MenuChoice.STATISTICS.option}
             ${MenuChoice.EXIT.option}
         """.trimIndent())
         return when (getNumberFromUser()) {
-            ONE -> MenuChoice.SHOW_SEATS
-            TWO -> MenuChoice.BUY_TICKET
-            ZERO -> MenuChoice.EXIT
+            ONE -> MenuChoice.SHOW_SEATS        // show seats
+            TWO -> MenuChoice.BUY_TICKET        // buy ticket
+            THREE -> MenuChoice.STATISTICS      // show data
+            ZERO -> MenuChoice.EXIT             // exit
             else -> throw InvalidInputException(
-                INVALID_RANGE.replace(ASTERISK, "$TWO")
+                INVALID_RANGE.replace(ASTERISK, "$THREE")
                     .replace("$ONE", "$ZERO")
             )
         }
@@ -105,17 +111,23 @@ data class MovieTheatre(
                     }
                 }.also { println() }
 
+                // get ticket price
+                val ticketPrice = getTicketPrice(row)
+
                 // update available seats
                 updateAvailableSeats(row, seat)
 
+                // update theatre income
+                updateTheatreIncome(ticketPrice)
+
                 // print ticket price
-                printTicketPrice(row)
+                printTicketPrice(ticketPrice)
 
                 break
 
             } catch (e: Exception) {
                 println(
-                    when (e) {
+                    when (e) {  // handle exceptions
                         is InvalidInputException,
                         is SeatUnavailableException -> printCustomException(e)
                         else -> printException(e)
@@ -137,23 +149,6 @@ data class MovieTheatre(
      *  @param input user input for chosen seat in theatre
      */
     private fun isSeatAvailable(row: Int, input: Int) = availableSeats[row]?.get(input.dec()).equals(S_STRING)
-
-    /**
-     *  updates availableSeats variable to reflect purchased seats
-     *  @param row chosen row in theatre
-     *  @param seat purchased seat in theatre
-     *  @see availableSeats
-     */
-    private fun updateAvailableSeats(row: Int, seat: Int) {
-        availableSeats[row]?.set(seat.dec(), B_STRING)
-    }
-
-    /**
-     *  prints the ticket price for the user's
-     *  selected row/seat value
-     *  @param row chosen row in theatre
-     */
-    private fun printTicketPrice(row: Int) = println("Ticket price: $${getTicketPrice(row)}\n")
 
     /**
      *  returns the ticket price for the
@@ -179,14 +174,78 @@ data class MovieTheatre(
     }
 
     /**
+     *  updates availableSeats variable to reflect purchased seats
+     *  @param row chosen row in theatre
+     *  @param seat purchased seat in theatre
+     *  @see availableSeats
+     */
+    private fun updateAvailableSeats(row: Int, seat: Int) {
+        availableSeats[row]?.set(seat.dec(), B_STRING)
+    }
+
+    /**
+     *  updates the theatre's accrued income from sold tickets
+     *  @param ticketPrice price of ticket for chosen seat
+     */
+    private fun updateTheatreIncome(ticketPrice: Int) {
+        theatreCurrentIncome += ticketPrice
+    }
+
+    /**
+     *  prints the ticket price for the user's
+     *  selected row/seat value
+     *  @param ticketPrice price of ticket for chosen seat
+     */
+    private fun printTicketPrice(ticketPrice: Int) = println("Ticket price: $$ticketPrice\n")
+
+    /**
+     *  prints information regarding the number of
+     *  tickets sold, its value as a percentage,
+     *  as well as current and possible income
+     *  @see getTicketsSold
+     *  @see getTicketsSoldPercentage
+     *  @see theatreCurrentIncome
+     *  @see theatrePossibleIncome
+     */
+    fun printStatistics() {
+        println("""
+            
+            Number of purchased tickets: ${getTicketsSold()}
+            Percentage: ${DECIMAL_FORMAT.format(getTicketsSoldPercentage())}%
+            Current income: $$theatreCurrentIncome
+            Total income: $$theatrePossibleIncome
+            
+        """.trimIndent())
+    }
+
+    /**
+     *  returns the number of tickets that have been purchased
+     *  @see availableSeats
+     */
+    private fun getTicketsSold() = availableSeats.values.flatten().count { it == B_STRING }
+
+    /**
+     *  returns the number of tickets sold as a percentage
+     *  @see getTicketsSold
+     */
+    private fun getTicketsSoldPercentage(): Double {
+        val totalTickets = theatreRows * theatreSeats
+        val ticketsSold = getTicketsSold().toDouble()
+        return (ticketsSold * ONE_HUNDRED) / totalTickets
+    }
+
+    /**
      *  sets the size of the movie theatre
      *  by prompting the user for both
      *  rows & seats values. Used to
      *  update class' private properties.
      *  Loops until valid inputs are received,
      *  Then updates availableSeats variable
-     *  with default values
+     *  with default values & sets the theatre's
+     *  possible income for selling all tickets
      *  @see MovieTheatre
+     *  @see setDefaultAvailableSeats
+     *  @see setPossibleIncome
      *  @throws InvalidInputException
      *  @throws NumberFormatException
      */
@@ -217,6 +276,9 @@ data class MovieTheatre(
                 // set default values for available seats
                 setDefaultAvailableSeats()
 
+                // set theatre's total possible income
+                setPossibleIncome()
+
                 break
 
             } catch (e: Exception) {
@@ -245,6 +307,27 @@ data class MovieTheatre(
         }
         // update available seats variable
         availableSeats.putAll(tempMap)
+    }
+
+    /**
+     *  sets the total income the theatre is
+     *  able to make if all tickets are sold
+     *  @see theatrePossibleIncome
+     */
+    private fun setPossibleIncome() {
+        val total = theatreRows * theatreSeats
+        theatrePossibleIncome = when {
+            total < SIXTY -> total * TEN
+            else -> {
+                val frontHalf = (theatreRows / TWO_DUB).toInt() // $10 each
+                val backHalf = theatreRows - frontHalf          // $8 each
+
+                val frontTotal = (frontHalf * theatreSeats) * TEN
+                val backTotal = (backHalf * theatreSeats) * EIGHT
+
+                frontTotal + backTotal
+            }
+        }
     }
 
     init {

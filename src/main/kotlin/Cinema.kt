@@ -13,6 +13,7 @@ fun main() {
             when (theatre.promptMenuChoice()) {
                 MenuChoice.SHOW_SEATS -> theatre.printTheatre()         // show seats
                 MenuChoice.BUY_TICKET -> theatre.purchaseTicket()       // buy ticket
+                MenuChoice.STATISTICS -> theatre.printStatistics()      // show data
                 MenuChoice.EXIT -> break                                // exit
             }
         } catch (e: Exception) {
