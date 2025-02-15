@@ -1,8 +1,6 @@
 package cinema.model
 
 import cinema.*
-import jdk.jfr.Percentage
-import javax.swing.text.html.HTML.Tag.HEAD
 
 /**
  *  Data class representing a movie theatre

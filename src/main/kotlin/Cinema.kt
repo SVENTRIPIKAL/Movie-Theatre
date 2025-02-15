@@ -4,10 +4,6 @@ import cinema.model.InvalidInputException
 import cinema.model.MenuChoice
 import cinema.model.MovieTheatre
 
-// TODO - update exception messages
-// That ticket has already been purchased!
-// Wrong input!
-
 fun main() {
     // initialize movie theatre
     val theatre = MovieTheatre()
