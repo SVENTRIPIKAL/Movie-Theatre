@@ -18,4 +18,4 @@ to select the aforementioned options until they choose to end the program.
 
 ### Inspiration
 [Cinema Room Manager](https://hyperskill.org/projects/138) (Kotlin) \
-_Part of the [Jetbrains Academy: Hyperskill - Kotlin Developer](https://hyperskill.org/courses/3-kotlin-developer) Course_
+_Part of the [JetBrains Academy: Hyperskill - Kotlin Developer](https://hyperskill.org/courses/3-kotlin-developer) Course_
